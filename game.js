@@ -304,54 +304,124 @@ function drawPlayerSetup() {
     drawCenteredText('PRESS ENTER WHEN DONE', 410, '#888', 1);
 }
 
-// Ski Jump - Mountain Background
+// Ski Jump - Mountain Background (C64 Style)
 function drawMountainBackground() {
-    // Sky
-    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, '#87CEEB');
-    gradient.addColorStop(1, '#E0F6FF');
+    // Sky with C64 blue gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, 180);
+    gradient.addColorStop(0, '#6C5EB5');  // C64 purple-blue
+    gradient.addColorStop(0.5, '#7869C4');
+    gradient.addColorStop(1, '#9C8DD5');
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, 300);
+    ctx.fillRect(0, 0, canvas.width, 180);
 
-    // Mountains in background
+    // Pixelated clouds
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    const cloudPositions = [
+        [80, 30, 40, 8], [150, 45, 35, 7], [280, 25, 50, 9],
+        [400, 50, 45, 8], [520, 35, 38, 7]
+    ];
+    cloudPositions.forEach(([x, y, w, h]) => {
+        ctx.fillRect(x, y, w, h);
+        ctx.fillRect(x + 5, y - 3, w - 10, h);
+        ctx.fillRect(x + 10, y - 5, w - 20, h);
+    });
+
+    // Brown/golden mountains (C64 style)
     ctx.fillStyle = '#8B7355';
     ctx.beginPath();
-    ctx.moveTo(0, 200);
-    ctx.lineTo(150, 100);
-    ctx.lineTo(300, 200);
-    ctx.lineTo(0, 200);
+    ctx.moveTo(-20, 160);
+    ctx.lineTo(100, 70);
+    ctx.lineTo(200, 120);
+    ctx.lineTo(280, 160);
+    ctx.lineTo(-20, 160);
     ctx.fill();
 
+    ctx.fillStyle = '#9C825E';
     ctx.beginPath();
-    ctx.moveTo(200, 200);
-    ctx.lineTo(400, 80);
-    ctx.lineTo(600, 200);
-    ctx.lineTo(200, 200);
+    ctx.moveTo(180, 160);
+    ctx.lineTo(320, 50);
+    ctx.lineTo(480, 130);
+    ctx.lineTo(550, 160);
+    ctx.lineTo(180, 160);
     ctx.fill();
 
-    // Snow caps
+    ctx.fillStyle = '#A0896F';
+    ctx.beginPath();
+    ctx.moveTo(400, 160);
+    ctx.lineTo(550, 80);
+    ctx.lineTo(660, 160);
+    ctx.lineTo(400, 160);
+    ctx.fill();
+
+    // Snow caps with texture
     ctx.fillStyle = '#FFFFFF';
+    // Mountain 1
     ctx.beginPath();
-    ctx.moveTo(130, 120);
+    ctx.moveTo(85, 85);
+    ctx.lineTo(100, 70);
+    ctx.lineTo(115, 85);
+    ctx.lineTo(110, 90);
+    ctx.lineTo(90, 90);
+    ctx.closePath();
+    ctx.fill();
+
+    // Mountain 2
+    ctx.beginPath();
+    ctx.moveTo(300, 65);
+    ctx.lineTo(320, 50);
+    ctx.lineTo(340, 65);
+    ctx.lineTo(335, 75);
+    ctx.lineTo(305, 75);
+    ctx.closePath();
+    ctx.fill();
+
+    // Mountain 3
+    ctx.beginPath();
+    ctx.moveTo(535, 95);
+    ctx.lineTo(550, 80);
+    ctx.lineTo(565, 95);
+    ctx.lineTo(560, 105);
+    ctx.lineTo(540, 105);
+    ctx.closePath();
+    ctx.fill();
+
+    // Add some darker shading on mountains
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.beginPath();
+    ctx.moveTo(100, 70);
     ctx.lineTo(150, 100);
-    ctx.lineTo(170, 120);
+    ctx.lineTo(200, 120);
+    ctx.lineTo(280, 160);
+    ctx.lineTo(200, 160);
+    ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
-    ctx.moveTo(380, 100);
-    ctx.lineTo(400, 80);
-    ctx.lineTo(420, 100);
+    ctx.moveTo(320, 50);
+    ctx.lineTo(400, 100);
+    ctx.lineTo(480, 130);
+    ctx.lineTo(550, 160);
+    ctx.lineTo(450, 160);
+    ctx.closePath();
     ctx.fill();
 
-    // Trees
-    ctx.fillStyle = '#228B22';
-    for (let i = 0; i < 10; i++) {
-        const x = 50 + i * 60;
-        const y = 180 + Math.random() * 20;
+    // Green trees at base
+    ctx.fillStyle = '#4A7C59';
+    for (let i = 0; i < 15; i++) {
+        const x = 20 + i * 45;
+        const y = 155 + (Math.sin(i) * 5);
+        // Tree triangles
         ctx.beginPath();
         ctx.moveTo(x, y);
-        ctx.lineTo(x - 10, y + 20);
-        ctx.lineTo(x + 10, y + 20);
+        ctx.lineTo(x - 6, y + 12);
+        ctx.lineTo(x + 6, y + 12);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(x, y + 6);
+        ctx.lineTo(x - 5, y + 16);
+        ctx.lineTo(x + 5, y + 16);
         ctx.closePath();
         ctx.fill();
     }
@@ -362,60 +432,159 @@ function drawSkiApproach() {
     clear();
     drawMountainBackground();
 
-    // Ski jump ramp
-    ctx.fillStyle = '#E8E8E8';
+    // Jump tower structure (left side) - like in original
+    ctx.fillStyle = '#8B7355';
+    ctx.fillRect(15, 80, 50, 180);
+
+    // Tower scaffolding details
+    ctx.strokeStyle = '#654321';
+    ctx.lineWidth = 2;
+    // Vertical supports
+    for (let i = 0; i < 4; i++) {
+        const x = 20 + i * 12;
+        ctx.beginPath();
+        ctx.moveTo(x, 80);
+        ctx.lineTo(x, 260);
+        ctx.stroke();
+    }
+    // Horizontal supports
+    for (let i = 0; i < 9; i++) {
+        const y = 85 + i * 20;
+        ctx.beginPath();
+        ctx.moveTo(15, y);
+        ctx.lineTo(65, y);
+        ctx.stroke();
+    }
+    // Diagonal supports
     ctx.beginPath();
-    ctx.moveTo(50, 150);
-    ctx.lineTo(500, 380);
-    ctx.lineTo(500, 400);
-    ctx.lineTo(30, 170);
+    ctx.moveTo(20, 100);
+    ctx.lineTo(50, 140);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(50, 100);
+    ctx.lineTo(20, 140);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(20, 180);
+    ctx.lineTo(50, 220);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(50, 180);
+    ctx.lineTo(20, 220);
+    ctx.stroke();
+
+    // Platform at top
+    ctx.fillStyle = '#A0826D';
+    ctx.fillRect(10, 75, 60, 8);
+
+    // Ski jump ramp (snow covered)
+    ctx.fillStyle = '#F0F0F0';
+    ctx.beginPath();
+    ctx.moveTo(60, 140);
+    ctx.lineTo(520, 380);
+    ctx.lineTo(520, 400);
+    ctx.lineTo(45, 160);
     ctx.closePath();
     ctx.fill();
 
-    // Ramp details (lines)
-    ctx.strokeStyle = '#CCC';
+    // Ramp structure beneath (brown wooden supports)
+    ctx.fillStyle = '#8B6914';
+    ctx.beginPath();
+    ctx.moveTo(60, 160);
+    ctx.lineTo(520, 400);
+    ctx.lineTo(520, 420);
+    ctx.lineTo(45, 180);
+    ctx.closePath();
+    ctx.fill();
+
+    // Ramp details (horizontal lines for texture)
+    ctx.strokeStyle = '#D0D0D0';
     ctx.lineWidth = 1;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 12; i++) {
         ctx.beginPath();
-        ctx.moveTo(50 + i * 45, 150 + i * 23);
-        ctx.lineTo(70 + i * 45, 150 + i * 23);
+        ctx.moveTo(60 + i * 40, 140 + i * 20);
+        ctx.lineTo(100 + i * 40, 140 + i * 20);
         ctx.stroke();
     }
 
+    // Support structure lines
+    ctx.strokeStyle = '#6B5511';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 8; i++) {
+        const baseX = 80 + i * 55;
+        const baseY = 160 + i * 30;
+        ctx.beginPath();
+        ctx.moveTo(baseX, baseY);
+        ctx.lineTo(baseX - 10, baseY + 30);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(baseX + 20, baseY);
+        ctx.lineTo(baseX + 30, baseY + 30);
+        ctx.stroke();
+    }
+
+    // Distance marker flag at landing
+    ctx.fillStyle = '#FF0000';
+    ctx.fillRect(485, 340, 3, 40);
+    ctx.fillRect(485, 340, 20, 12);
+
     // Skier
     const skierX = skier.x;
-    const skierY = 150 + (skier.x - 50) * 0.51;
+    const skierY = 140 + (skier.x - 60) * 0.52;
 
-    // Simple skier representation
-    ctx.fillStyle = '#FF0000';
-    ctx.fillRect(skierX - 5, skierY - 15, 10, 15);
+    // Skier body (crouched position)
+    ctx.fillStyle = '#0050C0';  // Blue suit
+    ctx.fillRect(skierX - 6, skierY - 12, 14, 12);
 
-    // Head
-    ctx.fillStyle = '#FFD700';
+    // Head with helmet
+    ctx.fillStyle = '#FFD0A0';  // Skin tone
     ctx.beginPath();
-    ctx.arc(skierX, skierY - 20, 6, 0, Math.PI * 2);
+    ctx.arc(skierX, skierY - 16, 5, 0, Math.PI * 2);
     ctx.fill();
 
-    // Skis
+    // Helmet
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(skierX, skierY - 17, 6, Math.PI, 2 * Math.PI);
+    ctx.fill();
+
+    // Skis (parallel)
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(skierX - 8, skierY);
-    ctx.lineTo(skierX - 15, skierY + 10);
+    ctx.moveTo(skierX - 4, skierY);
+    ctx.lineTo(skierX - 10, skierY + 8);
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(skierX + 8, skierY);
-    ctx.lineTo(skierX + 15, skierY + 10);
+    ctx.moveTo(skierX + 4, skierY);
+    ctx.lineTo(skierX + 10, skierY + 8);
     ctx.stroke();
 
-    // Speed indicator
-    drawPixelText(`SPEED: ${Math.floor(skier.speed)} km/h`, 20, 440, '#FFF', 2);
+    // Poles
+    ctx.strokeStyle = '#666';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(skierX - 8, skierY - 8);
+    ctx.lineTo(skierX - 12, skierY + 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(skierX + 8, skierY - 8);
+    ctx.lineTo(skierX + 12, skierY + 2);
+    ctx.stroke();
 
-    // Current player
+    // Black bar at bottom for HUD (like C64 original)
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 450, canvas.width, 30);
+
+    // HUD - Player name on left (like original)
     const currentPlayer = players[currentPlayerIndex];
-    drawPixelText(`${currentPlayer.name} (${currentPlayer.nation})`, 20, 30, '#FFFF00', 2);
-    drawPixelText(`ROUND ${currentRound}/${maxRounds}`, 500, 30, '#FFFF00', 2);
+    drawPixelText(currentPlayer.name.toUpperCase(), 10, 468, '#FFFF00', 2);
+    drawPixelText(currentPlayer.nation, 10 + currentPlayer.name.length * 16 + 10, 468, '#FFFFFF', 2);
+
+    // HUD - Speed on right (like original)
+    const speedText = `${Math.floor(skier.speed).toString().padStart(3, ' ')} KM/H`;
+    drawPixelText(speedText, 480, 468, '#FFFFFF', 2);
 
     if (skier.speed === 0) {
         drawCenteredText('PRESS SPACE TO START!', 250, '#FFFF00', 2);
@@ -428,18 +597,41 @@ function drawSkiApproach() {
 function drawSkiFlight() {
     clear();
 
-    // Sky
-    ctx.fillStyle = '#87CEEB';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Sky with C64 colors
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, '#6C5EB5');
+    gradient.addColorStop(1, '#9C8DD5');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, 300);
 
-    // Ground far below
-    ctx.fillStyle = '#E8E8E8';
-    ctx.fillRect(0, 400, canvas.width, 80);
-
-    // Landing slope
-    ctx.fillStyle = '#F5F5F5';
+    // Distant mountains
+    ctx.fillStyle = '#8B7355';
     ctx.beginPath();
-    ctx.moveTo(0, 450);
+    ctx.moveTo(0, 200);
+    ctx.lineTo(200, 120);
+    ctx.lineTo(400, 180);
+    ctx.lineTo(640, 150);
+    ctx.lineTo(640, 300);
+    ctx.lineTo(0, 300);
+    ctx.closePath();
+    ctx.fill();
+
+    // Snow on mountains
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(180, 135);
+    ctx.lineTo(200, 120);
+    ctx.lineTo(220, 135);
+    ctx.fill();
+
+    // Ground/landing area
+    ctx.fillStyle = '#F5F5F5';
+    ctx.fillRect(0, 380, canvas.width, 100);
+
+    // Landing slope (angled)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(0, 430);
     ctx.lineTo(640, 350);
     ctx.lineTo(640, 480);
     ctx.lineTo(0, 480);
@@ -502,50 +694,144 @@ function drawSkiFlight() {
 function drawSkiLanding() {
     clear();
 
-    // Sky
-    ctx.fillStyle = '#87CEEB';
-    ctx.fillRect(0, 0, canvas.width, 200);
+    // Sky with C64 colors
+    const gradient = ctx.createLinearGradient(0, 0, 0, 180);
+    gradient.addColorStop(0, '#6C5EB5');
+    gradient.addColorStop(1, '#9C8DD5');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, 180);
 
-    // Ground
-    ctx.fillStyle = '#E8E8E8';
-    ctx.fillRect(0, 200, canvas.width, canvas.height - 200);
-
-    // Landing area
-    ctx.fillStyle = '#F5F5F5';
+    // Mountains in background
+    ctx.fillStyle = '#8B7355';
     ctx.beginPath();
-    ctx.moveTo(0, 250);
-    ctx.lineTo(640, 350);
-    ctx.lineTo(640, 480);
-    ctx.lineTo(0, 480);
+    ctx.moveTo(0, 140);
+    ctx.lineTo(150, 80);
+    ctx.lineTo(300, 120);
+    ctx.lineTo(450, 90);
+    ctx.lineTo(640, 130);
+    ctx.lineTo(640, 180);
+    ctx.lineTo(0, 180);
     ctx.closePath();
     ctx.fill();
 
-    // Distance markers
-    ctx.fillStyle = '#FF0000';
-    ctx.font = '12px "Courier New", monospace';
-    for (let i = 60; i <= 120; i += 10) {
-        const x = (i - 60) * 10 + 50;
-        ctx.fillText(`${i}m`, x, 240);
-        ctx.fillRect(x, 245, 2, 10);
+    // Snow caps
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(135, 92);
+    ctx.lineTo(150, 80);
+    ctx.lineTo(165, 92);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(435, 100);
+    ctx.lineTo(450, 90);
+    ctx.lineTo(465, 100);
+    ctx.fill();
+
+    // Stadium/Tribüne structure (like in original)
+    ctx.fillStyle = '#A0826D';
+    ctx.fillRect(0, 180, 640, 40);
+
+    // Tribüne details
+    ctx.fillStyle = '#8B6914';
+    for (let i = 0; i < 20; i++) {
+        ctx.fillRect(i * 32, 185, 28, 35);
+    }
+
+    // Railing
+    ctx.strokeStyle = '#654321';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, 220);
+    ctx.lineTo(640, 220);
+    ctx.stroke();
+
+    // Flags at stadium (Olympic-style, like in second reference image)
+    const flagPositions = [150, 250, 350, 450, 550];
+    const flagColors = ['#0085C7', '#EE334E', '#FCB131', '#00A651', '#FFFFFF'];
+
+    flagPositions.forEach((x, i) => {
+        // Flagpole
+        ctx.strokeStyle = '#666';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x, 140);
+        ctx.lineTo(x, 180);
+        ctx.stroke();
+
+        // Flag (waving)
+        ctx.fillStyle = flagColors[i];
+        ctx.beginPath();
+        ctx.moveTo(x, 140);
+        ctx.lineTo(x + 25, 145);
+        ctx.lineTo(x + 25, 155);
+        ctx.lineTo(x, 160);
+        ctx.closePath();
+        ctx.fill();
+
+        // Flag border
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+
+    // Landing area - white snow
+    ctx.fillStyle = '#F0F0F0';
+    ctx.fillRect(0, 220, 640, 80);
+
+    // Landing slope lines (to show perspective)
+    ctx.strokeStyle = '#D0D0D0';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 8; i++) {
+        const y = 230 + i * 8;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(640, y);
+        ctx.stroke();
+    }
+
+    // Distance markers on side
+    ctx.fillStyle = '#000';
+    ctx.font = '14px "Courier New", monospace';
+    for (let i = 70; i <= 110; i += 10) {
+        const y = 240 + (i - 70) * 5;
+        ctx.fillText(`${i}M`, 580, y);
+    }
+
+    // Takeoff platform structure (visible in distance)
+    ctx.fillStyle = '#8B7355';
+    ctx.fillRect(50, 260, 60, 40);
+
+    // Platform details
+    ctx.strokeStyle = '#654321';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.moveTo(55 + i * 15, 260);
+        ctx.lineTo(55 + i * 15, 300);
+        ctx.stroke();
     }
 
     // Skier on ground
-    ctx.fillStyle = '#FF0000';
+    ctx.fillStyle = '#0050C0';
     ctx.fillRect(skier.x - 5, skier.y - 15, 10, 15);
 
-    ctx.fillStyle = '#FFD700';
+    ctx.fillStyle = '#FFD0A0';
     ctx.beginPath();
     ctx.arc(skier.x, skier.y - 20, 6, 0, Math.PI * 2);
     ctx.fill();
 
+    // Black bar at bottom for HUD
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 300, canvas.width, 180);
+
     // Results
     const currentPlayer = players[currentPlayerIndex];
-    drawCenteredText(`${currentPlayer.name} - ROUND ${currentRound}`, 100, '#FFFF00', 2);
-    drawCenteredText(`DISTANCE: ${Math.floor(skier.distance)}m`, 200, '#FFF', 3);
-    drawCenteredText(`STYLE POINTS: ${skier.stylePoints.toFixed(1)}`, 260, '#FFF', 2);
+    drawCenteredText(`${currentPlayer.name} - ROUND ${currentRound}`, 340, '#FFFF00', 2);
+    drawCenteredText(`DISTANCE: ${Math.floor(skier.distance)}m`, 380, '#FFFFFF', 3);
+    drawCenteredText(`STYLE POINTS: ${skier.stylePoints.toFixed(1)}`, 420, '#00FFFF', 2);
 
     const totalScore = skier.distance * 2 + skier.stylePoints;
-    drawCenteredText(`TOTAL: ${totalScore.toFixed(1)} points`, 320, '#00FF00', 2);
+    drawCenteredText(`TOTAL: ${totalScore.toFixed(1)} POINTS`, 450, '#00FF00', 2);
 
     setTimeout(() => {
         if (gameState === STATES.SKI_LANDING) {
