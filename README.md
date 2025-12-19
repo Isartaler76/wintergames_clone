@@ -35,7 +35,13 @@ Ein browserfähiger Clone des klassischen Schanzenspringens aus **WINTER GAMES**
 4. **Landung**: Automatisch - Balance beeinflusst die Haltungsnote
 5. **Punktevergabe**: Weite × 2 + Haltungspunkte
 
-## Wie spielen?
+## 🎮 Online spielen
+
+**[► JETZT SPIELEN (GitHub Pages)](https://isartaler76.github.io/wintergames_clone/)**
+
+Das Spiel wird automatisch über GitHub Pages deployed und ist direkt im Browser spielbar!
+
+## Lokal spielen
 
 Öffne einfach `index.html` in einem modernen Webbrowser!
 
