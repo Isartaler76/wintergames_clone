@@ -22,18 +22,26 @@ Ein browserfähiger Clone des klassischen Schanzenspringens aus **WINTER GAMES**
 ## Steuerung
 
 - **LEERTASTE**: Start des Anlaufs / Absprung / Menü-Auswahl
-- **PFEILTASTEN (Links/Rechts)**: Balance in der Luft / Menü-Navigation
-- **PFEILTASTEN (Hoch/Ab)**: Anzahl der Spieler wählen
 - **Buchstaben**: Namenseingabe
 - **ENTER**: Spieler-Setup bestätigen
+
+### Im Flug (Authentic Winter Games Controls):
+- **LINKS**: Zurücklehnen (wenn zu weit vorne)
+- **RECHTS**: Vorlehnen (wenn zu weit hinten)
+- **HOCH**: Knie strecken (wenn zu nah am Körper)
+- **RUNTER**: Ski entwirren (wenn gekreuzt)
+
+**Ziel:** Halte alle Werte nahe 0 für perfekte Haltung! Die Posture-Anzeige oben rechts hilft dir dabei.
 
 ## Schanzenspringen im Detail
 
 1. **Anlauf**: Drücke LEERTASTE zum Starten
-2. **Absprung**: Drücke LEERTASTE im richtigen Moment (zwischen den Markierungen)
-3. **Flug**: Nutze die PFEILTASTEN für optimale Balance
-4. **Landung**: Automatisch - Balance beeinflusst die Haltungsnote
-5. **Punktevergabe**: Weite × 2 + Haltungspunkte
+2. **Absprung**: Drücke LEERTASTE im richtigen Moment (zwischen den Markierungen) - spätes Abspringen ist besser!
+3. **Flug**: Korrigiere kontinuierlich deine Haltung mit den Pfeiltasten
+   - Beobachte die vergrößerte Posture-Anzeige oben rechts
+   - Perfekte Haltung = Arme eng am Körper, Ski parallel
+4. **Landung**: Automatisch - Haltung zum Zeitpunkt der Landung beeinflusst die Note stark
+5. **Punktevergabe**: **Weite × 3 + Haltungspunkte** (Original-Formel!)
 
 ## 🎮 Online spielen
 
