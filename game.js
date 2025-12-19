@@ -50,7 +50,7 @@ const NATIONS = [
     { name: 'JPN', colors: ['#FFFFFF', '#BC002D', '#FFFFFF'] }
 ];
 
-// Ski Jump variables
+// Ski Jump variables (extended for authentic gameplay)
 let skier = {
     x: 100,
     y: 150,
@@ -58,6 +58,9 @@ let skier = {
     velocityY: 0,
     angle: 0,
     balance: 0,
+    leanForwardBack: 0,     // -100 (too far back) to +100 (too far forward)
+    kneePosition: 0,         // 0 = optimal, +100 = knees too close
+    skisCrossed: 0,          // 0 = parallel (good), +100 = crossed (bad)
     speed: 0,
     distance: 0,
     stylePoints: 100,
@@ -668,26 +671,95 @@ function drawSkiFlight() {
 
     ctx.restore();
 
-    // HUD
+    // HUD - Top left
     const currentPlayer = players[currentPlayerIndex];
-    drawPixelText(`${currentPlayer.name}`, 20, 30, '#FFFF00', 2);
-    drawPixelText(`DISTANCE: ${Math.floor(skier.distance)}m`, 20, 60, '#FFF', 2);
-    drawPixelText(`STYLE: ${Math.floor(skier.stylePoints)}`, 20, 90, '#FFF', 2);
+    drawPixelText(currentPlayer.name, 10, 25, '#FFFF00', 2);
+    drawPixelText(`DIST: ${Math.floor(skier.distance)}m`, 10, 50, '#FFF', 1);
+    drawPixelText(`STYLE: ${Math.floor(skier.stylePoints)}`, 10, 70, '#00FFFF', 1);
 
-    // Balance indicator
-    const balanceBarX = 520;
-    const balanceBarY = 30;
-    drawRect(balanceBarX - 2, balanceBarY - 2, 104, 24, '#FFF');
+    // POSTURE DISPLAY - Top right (like original!)
+    const postureX = 520;
+    const postureY = 20;
 
-    // Balance bar
-    const balanceColor = Math.abs(skier.balance) < 30 ? '#00FF00' : '#FF0000';
-    const balancePos = 50 + skier.balance * 0.5;
-    ctx.fillStyle = balanceColor;
-    ctx.fillRect(balanceBarX + balancePos - 2, balanceBarY, 4, 20);
+    // Posture box background
+    ctx.fillStyle = '#000';
+    ctx.fillRect(postureX - 5, postureY - 5, 110, 100);
+    ctx.strokeStyle = '#FFF';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(postureX - 5, postureY - 5, 110, 100);
 
-    drawPixelText('BALANCE', balanceBarX - 80, balanceBarY + 15, '#FFF', 1);
+    // Draw augmented skier showing posture
+    ctx.save();
+    ctx.translate(postureX + 35, postureY + 50);
 
-    drawCenteredText('USE ARROW KEYS FOR BALANCE', 420, '#FFFF00', 1);
+    // Apply posture transformations
+    const leanAngle = skier.leanForwardBack * 0.0015;
+    ctx.rotate(leanAngle);
+
+    // Skier body
+    ctx.fillStyle = '#0050C0';
+    const bodyWidth = 20 - skier.kneePosition * 0.1;  // Knees affect width
+    ctx.fillRect(-10, -8, bodyWidth, 16);
+
+    // Head
+    ctx.fillStyle = '#FFD0A0';
+    ctx.beginPath();
+    ctx.arc(-12, -5, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Helmet
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(-12, -6, 9, Math.PI, 2 * Math.PI);
+    ctx.fill();
+
+    // Arms - close to body when perfect
+    const armSpread = Math.abs(skier.leanForwardBack) * 0.15 + Math.abs(skier.kneePosition) * 0.1;
+    ctx.strokeStyle = '#0050C0';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(-8, 0);
+    ctx.lineTo(-8 - armSpread, 8);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-8, 0);
+    ctx.lineTo(-8 - armSpread, -8);
+    ctx.stroke();
+
+    // Skis - show if crossed
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 4;
+    const skiOffset = 3 + skier.skisCrossed * 0.05;
+
+    ctx.beginPath();
+    ctx.moveTo(5, -skiOffset);
+    ctx.lineTo(30, -skiOffset - skier.skisCrossed * 0.08);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(5, skiOffset);
+    ctx.lineTo(30, skiOffset + skier.skisCrossed * 0.08);
+    ctx.stroke();
+
+    ctx.restore();
+
+    // Posture indicators (text warnings)
+    let warningY = postureY + 110;
+    if (Math.abs(skier.leanForwardBack) > 30) {
+        const warning = skier.leanForwardBack > 0 ? 'TOO FAR FORWARD!' : 'TOO FAR BACK!';
+        drawPixelText(warning, postureX - 30, warningY, '#FF0000', 1);
+        warningY += 15;
+    }
+    if (skier.kneePosition > 30) {
+        drawPixelText('KNEES TOO CLOSE!', postureX - 30, warningY, '#FF0000', 1);
+        warningY += 15;
+    }
+    if (skier.skisCrossed > 30) {
+        drawPixelText('SKIS CROSSED!', postureX - 20, warningY, '#FF0000', 1);
+    }
+
+    // Control hints at bottom
+    drawPixelText('LEFT/RIGHT: Lean  UP/DOWN: Knees/Skis', 150, 465, '#FFFF00', 1);
 }
 
 // Ski Jump - Landing Phase
@@ -827,11 +899,11 @@ function drawSkiLanding() {
     // Results
     const currentPlayer = players[currentPlayerIndex];
     drawCenteredText(`${currentPlayer.name} - ROUND ${currentRound}`, 340, '#FFFF00', 2);
-    drawCenteredText(`DISTANCE: ${Math.floor(skier.distance)}m`, 380, '#FFFFFF', 3);
+    drawCenteredText(`DISTANCE: ${Math.floor(skier.distance)}m (×3 = ${Math.floor(skier.distance * 3)})`, 380, '#FFFFFF', 2);
     drawCenteredText(`STYLE POINTS: ${skier.stylePoints.toFixed(1)}`, 420, '#00FFFF', 2);
 
-    const totalScore = skier.distance * 2 + skier.stylePoints;
-    drawCenteredText(`TOTAL: ${totalScore.toFixed(1)} POINTS`, 450, '#00FF00', 2);
+    const totalScore = skier.distance * 3 + skier.stylePoints;
+    drawCenteredText(`TOTAL: ${totalScore.toFixed(1)} POINTS`, 450, '#00FF00', 3);
 
     setTimeout(() => {
         if (gameState === STATES.SKI_LANDING) {
@@ -983,18 +1055,43 @@ function updateSkiFlight() {
     // Update angle based on velocity
     skier.angle = Math.atan2(skier.velocityY, skier.velocityX);
 
-    // Balance affects style points
-    if (Math.abs(skier.balance) > 30) {
-        skier.stylePoints -= 0.3;
-    } else if (Math.abs(skier.balance) < 10) {
-        skier.stylePoints += 0.05;
+    // Posture degradation (realistic drift)
+    // Gradually drift towards imperfect posture
+    skier.leanForwardBack += (Math.random() - 0.5) * 3;
+    skier.kneePosition += (Math.random() - 0.3) * 2;
+    skier.skisCrossed += (Math.random() - 0.4) * 2;
+
+    // Clamp posture values
+    skier.leanForwardBack = Math.max(-100, Math.min(100, skier.leanForwardBack));
+    skier.kneePosition = Math.max(0, Math.min(100, skier.kneePosition));
+    skier.skisCrossed = Math.max(0, Math.min(100, skier.skisCrossed));
+
+    // Calculate total posture error
+    const leanError = Math.abs(skier.leanForwardBack);
+    const kneeError = Math.abs(skier.kneePosition);
+    const skiError = Math.abs(skier.skisCrossed);
+    const totalError = leanError + kneeError + skiError;
+
+    // Posture affects style points (like original)
+    if (totalError > 100) {
+        skier.stylePoints -= 0.5;
+    } else if (totalError < 30) {
+        skier.stylePoints += 0.1;
+    } else {
+        skier.stylePoints -= 0.2;
+    }
+
+    // Perfect posture bonus (arms close to body = all values near 0)
+    if (leanError < 10 && kneeError < 10 && skiError < 10) {
+        skier.stylePoints += 0.3;  // Big bonus for perfect form
     }
 
     // Clamp style points
     skier.stylePoints = Math.max(0, Math.min(100, skier.stylePoints));
 
-    // Calculate distance
-    skier.distance = 60 + (skier.x - 300) / 10 + skier.takeoffQuality * 5;
+    // Calculate distance (good posture = better distance!)
+    const postureFactor = Math.max(0, 1 - totalError / 200);
+    skier.distance = 60 + (skier.x - 300) / 10 + skier.takeoffQuality * 5 + postureFactor * 8;
 
     // Check landing
     const groundY = 400 - (skier.x - 300) * 0.15;
@@ -1002,19 +1099,21 @@ function updateSkiFlight() {
         skier.y = groundY;
         skier.landed = true;
 
-        // Landing quality affects style
-        if (Math.abs(skier.balance) > 40) {
+        // Landing quality affects style (based on current posture)
+        if (totalError > 80) {
             skier.stylePoints -= 20;
             beep(300, 400, 0.5);
-        } else {
-            skier.stylePoints += 10;
+        } else if (totalError < 20) {
+            skier.stylePoints += 15;  // Bonus for clean landing
             beep(700, 200);
+        } else {
+            beep(500, 200);
         }
 
         skier.stylePoints = Math.max(0, Math.min(100, skier.stylePoints));
 
-        // Save score
-        const totalScore = skier.distance * 2 + skier.stylePoints;
+        // Save score - AUTHENTIC FORMULA: distance * 3 + posture!
+        const totalScore = skier.distance * 3 + skier.stylePoints;
         players[currentPlayerIndex].scores.push(totalScore);
         players[currentPlayerIndex].totalScore += totalScore;
 
@@ -1058,6 +1157,9 @@ function resetSkier() {
     skier.velocityY = 0;
     skier.angle = 0;
     skier.balance = 0;
+    skier.leanForwardBack = 0;
+    skier.kneePosition = 0;
+    skier.skisCrossed = 0;
     skier.speed = 0;
     skier.distance = 0;
     skier.stylePoints = 100;
@@ -1251,16 +1353,26 @@ document.addEventListener('keydown', (e) => {
         }
     }
 
-    // Flight controls
+    // Flight controls - Authentic Winter Games mechanics!
     if (gameState === STATES.SKI_FLIGHT) {
         if (e.key === 'ArrowLeft') {
-            skier.balance -= 8;
+            // Correct forward lean (lean back)
+            skier.leanForwardBack -= 12;
         } else if (e.key === 'ArrowRight') {
-            skier.balance += 8;
+            // Correct backward lean (lean forward)
+            skier.leanForwardBack += 12;
+        } else if (e.key === 'ArrowUp') {
+            // Fix knees (move knees away from body)
+            skier.kneePosition -= 12;
+        } else if (e.key === 'ArrowDown') {
+            // Uncross skis
+            skier.skisCrossed -= 12;
         }
 
-        // Clamp balance
-        skier.balance = Math.max(-100, Math.min(100, skier.balance));
+        // Clamp all posture values
+        skier.leanForwardBack = Math.max(-100, Math.min(100, skier.leanForwardBack));
+        skier.kneePosition = Math.max(0, Math.min(100, skier.kneePosition));
+        skier.skisCrossed = Math.max(0, Math.min(100, skier.skisCrossed));
     }
 });
 
